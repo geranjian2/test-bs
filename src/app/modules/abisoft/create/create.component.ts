@@ -34,7 +34,7 @@ export class CreateComponent implements OnInit {
       age: [null, Validators.required],
       date_birth: [null, Validators.required],
       date_inscription: [null, Validators.required],
-      cost: [null, Validators.required]
+      cost: [null]
     },
     {
       validator: this.ConfirmedValidator('age'),
@@ -69,10 +69,10 @@ export class CreateComponent implements OnInit {
       }
     };
   }
+
   ValidateName() {
     const name = this.myForm.controls['name'].value;
     let nameValue
-    console.log(name)
     if(name)
     {
       console.log
@@ -89,7 +89,7 @@ export class CreateComponent implements OnInit {
 
 
   }
-  myFunction(){
+  validateLengthNames(){
     const name = this.myForm.controls['name'].value;
     if(name){
       let nameValue = name.split(' ');
@@ -102,30 +102,25 @@ export class CreateComponent implements OnInit {
        
     }
   }
+
   onSubmit(form: any) {
     if(form.valid){
-      let years = moment().diff(form.value.date_birth, 'years');
-      if(Number(form.value.age) !== years){
-        this.simpleAlert('La edad y fecha de nacimiento no coinciden');
+      let years = moment().diff(form.value.date_inscription, 'years');
+      let valueCost = 100;
+      if(years<1 || years===1){
+        form.controls['cost'].setValue(valueCost);
+      }else{
+        form.controls['cost'].setValue(valueCost * years);
       }
-      console.log(form.value.age ,'!==', years);
+
+      console.log('!==', years);
       console.log('date_birth', form.value.date_birth);
       console.log('date_inscription', form.value.date_inscription);
       console.log('cost', form.value.cost);
       return
     }
-    this.validateAllFields(form); 
   }
-  validateAllFields(formGroup: FormGroup) {         
-    Object.keys(formGroup.controls).forEach(field => {  
-        const control = formGroup.get(field);            
-        if (control instanceof FormControl) {             
-            control.markAsTouched({ onlySelf: true });
-        } else if (control instanceof FormGroup) {        
-            this.validateAllFields(control);  
-        }
-    });
-}
+
   simpleAlert(message:string){
     Swal.fire(message);
   }
