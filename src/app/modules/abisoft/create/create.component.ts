@@ -5,6 +5,8 @@ import * as moment from 'moment';
 import Swal from 'sweetalert2';
 import { deLocale } from 'ngx-bootstrap/locale';
 import { BsDatepickerConfig, BsLocaleService } from 'ngx-bootstrap/datepicker';
+import { BisoftService } from 'src/app/service/bisoft/bisoft.service';
+import { ResponseServer } from 'src/app/core/models/response';
 @Component({
   selector: 'app-create',
   templateUrl: './create.component.html',
@@ -21,7 +23,7 @@ export class CreateComponent implements OnInit {
   bsConfig?: Partial<BsDatepickerConfig>;
   constructor(
     private fb: FormBuilder,
-    private localeService: BsLocaleService
+    private bisoftService :BisoftService
   ) { 
     this.dateInitial = moment(Date.now()).subtract(18, 'years').toDate();
     defineLocale('es', deLocale);
@@ -49,16 +51,21 @@ export class CreateComponent implements OnInit {
     });
   }
   ageValidator(){
-    const age = this.myForm.controls['age'].value;
-    const dateBirthday =  this.myForm.controls['date_birth'].value;
-    if(dateBirthday){
-      let years = moment().diff(dateBirthday, 'years');
-      if(Number(age) !== years){
+    const age = this.myForm.controls['age'];
+    const dateBirthday =  this.myForm.controls['date_birth'];
+    if(dateBirthday.value){
+      let years = moment().diff(dateBirthday.value, 'years');
+      console.log('YEARS::',years);
+      console.log('AGE::',age.value);
+      if(Number(age.value) !== Number(years)){
+        console.log('VALIDO::');
+        
+        dateBirthday.setErrors({ confirmedValidator: true });
         return true;
       }
-
+      dateBirthday.clearValidators();
+      dateBirthday.updateValueAndValidity();
     }
-    
     return false
   }
   ConfirmedValidator(controlName: string) {
@@ -75,14 +82,10 @@ export class CreateComponent implements OnInit {
     let nameValue
     if(name)
     {
-      console.log
       nameValue = name.split(' ');
       if(nameValue.length < 2){
+        this.myForm.controls['name'].setErrors({ confirmedValidator: true });
         return true
-      }else{
-        nameValue.forEach((element: any) => {
-            console.log('llego aca',element)
-        });
       }
     }
     return false
@@ -96,6 +99,7 @@ export class CreateComponent implements OnInit {
       this.validateName = false; 
       nameValue.forEach((element:any) => {
         if(element.length>4){
+          this.myForm.controls['name'].setErrors({ confirmedValidator: true });
           this.validateName = true
         }
       });
@@ -104,6 +108,7 @@ export class CreateComponent implements OnInit {
   }
 
   onSubmit(form: any) {
+    console.log(form.valid);
     if(form.valid){
       let years = moment().diff(form.value.date_inscription, 'years');
       let valueCost = 100;
@@ -112,12 +117,9 @@ export class CreateComponent implements OnInit {
       }else{
         form.controls['cost'].setValue(valueCost * years);
       }
-
-      console.log('!==', years);
-      console.log('date_birth', form.value.date_birth);
-      console.log('date_inscription', form.value.date_inscription);
-      console.log('cost', form.value.cost);
-      return
+      this.bisoftService.register(form.value)?.subscribe((response:ResponseServer)=>{
+        console.log('ResponseServer::', response);
+      })
     }
   }
 
