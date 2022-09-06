@@ -1,0 +1,56 @@
+<div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title">Registro</h3>
+    </div>
+    <form  [formGroup]="myForm" (ngSubmit)="onSubmit(myForm)">
+        <div class="card-body">
+            <div class="form-group">
+                <label for="exampleInputEmail1">Nombres</label>
+                <input type="email" formControlName="name" class="form-control" id="exampleInputEmail1" placeholder="Nombres" (focusout)="myFunction()">
+                 
+                <span *ngIf="ValidateName()">Debe digitar minimo un nombre y un  apellido</span>
+                <span *ngIf="validateName">Cada nombre debe tener 4 carateres</span>
+            </div>
+            <div class="form-group" >
+                <label for="exampleInputPassword1">Edad</label>
+                <input type="text" formControlName="age" class="form-control" id="exampleInputPassword1" placeholder="Ingrese su edad">
+                <span class="text-muted" *ngIf="!myForm.controls['age'].valid && 
+                myForm.controls['age']?.touched"> Ingrese una edad Valida Mayor a 17 años</span>
+             
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">Fecha de nacimiento</label>
+                <input type="text"
+                           placeholder="Fecha de Nacimiento"
+                           class="form-control"
+                           bsDatepicker
+                           [maxDate]="dateInitial"
+                           [bsValue]="dateInitial"
+                           formControlName="date_birth"
+                           [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD',containerClass:  colorTheme }" bsDatepicker #dp="bsDatepicker">
+                           <span *ngIf="ageValidator()">*La edad y la fecha de nacimiento no coinciden</span>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">Fecha de inscripción</label>
+                <input type="text"
+                           placeholder="Fecha de Inscripción"
+                           class="form-control"
+                           bsDatepicker
+                           formControlName="date_inscription"
+                           [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', containerClass:  colorTheme }">
+                <span class="text-muted" *ngIf="!myForm.controls['date_inscription'].valid && 
+                           myForm.controls['date_inscription']?.touched">Valor requerido</span>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">Costo</label>
+                <input type="text"  formControlName="cost" class="form-control" id="exampleInputPassword1" placeholder="Costo">
+                <span class="text-muted" *ngIf="!myForm.controls['cost'].valid && 
+                myForm.controls['cost']?.touched">Valor requerido</span>
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary" disabled="!form.valid">Enviar</button>
+        </div>
+    </form>
+</div>
